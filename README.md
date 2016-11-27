@@ -1,6 +1,6 @@
 # gantry-yard
 
-[![Docker Repository on Quay](https://quay.io/repository/leopoldodonnell/gantry-yard/status "Docker Repository on Quay")
+![Docker Repository on Quay](https://quay.io/repository/leopoldodonnell/gantry-yard/status "Docker Repository on Quay")
 
 **DOCUMENTATION IS UNDER CONSTRUCTION**
 
