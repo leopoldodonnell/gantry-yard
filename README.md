@@ -1,5 +1,7 @@
 # gantry-yard
 
+![Docker Repository on Quay](https://quay.io/repository/leopoldodonnell/gantry-yard/status "Docker Repository on Quay")
+
 **DOCUMENTATION IS UNDER CONSTRUCTION**
 
 A Ruby based DevOps Framework Tool for Container-based Development

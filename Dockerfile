@@ -60,9 +60,6 @@ RUN apk add --update build-base libxml2-dev libffi-dev && \
   gem install mimemagic -v ${MIMEMAGIC_VERSION} --no-document && \
   apk del build-base
 
-# Install the help ourtput that is spit out when no command is given
-ADD help /help
-
 ADD lib /gantry-yard/lib
 ADD tasks /gantry-yard/tasks
 
