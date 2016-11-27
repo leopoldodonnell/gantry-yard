@@ -1,0 +1,48 @@
+#!/bin/bash
+#
+# gantry-yard - Run the gantry-yard container with appropriate volume mounts
+#
+# Usage: gantry [-c workdir] [-d] [tool tool_args]
+#
+#   -c : run gantry from within another docker container and use its volume mounts using
+#        the workdir argument as the working directory for the gantry container
+#   -d : debug mode. Drop into the container using bash as an interactive entry point
+#
+
+DOCKER_IMAGE="gantry-yard"
+
+# Update this if you're using a private docker registry
+REGISTRY="quay.io/leopoldodonnell/"
+
+VOLUMES="-v $HOME/.aws:/root/.aws \
+        -v ${PWD}:/share \
+        -v $HOME/.kube:/root/.kube \
+        -v $HOME/.helm:/root/.helm \
+        -v $HOME/.ssh:/root/.ssh \
+        -v /var/run/docker.sock:/var/run/docker.sock"
+
+opt_count=0
+
+while getopts "c:d" arg > /dev/null 2>&1; do
+  case "${arg}" in
+    c)
+      opt_count=$((opt_count + 2))
+      MY_CONTAINER_ID=`cat /proc/self/cgroup |awk -F '/' '$2 = "docker" && NR == 1 {print $NF }'`
+      VOLUMES="--volumes-from ${MY_CONTAINER_ID} -w ${OPTARG}"
+      ;;
+    d)
+      opt_count=$((optCount + 1))
+      DEBUG="-ti --entrypoint /bin/bash"
+      ;;
+    *)
+      ;;
+  esac
+done
+
+# get rid of options passed the to script and not passed onto the container
+shift $opt_count
+
+docker run --rm \
+  ${VOLUMES} \
+  ${DEBUG} \
+  ${REGISTRY}${DOCKER_IMAGE} $@

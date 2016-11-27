@@ -1,0 +1,12 @@
+# Main Rakefile for gantry-yard
+
+gantry_libdir = '/gantry-yard/lib'
+local_libdir = File.dirname(__FILE__) + '/lib'
+$LOAD_PATH.unshift(gantry_libdir) if Dir.exists? gantry_libdir
+$LOAD_PATH.unshift(File.expand_path(local_libdir)) if Dir.exists? local_libdir
+
+# Load all default and user supplied Rakefiles
+Dir['/gantry-yard/tasks/**/*.rb'].each { |rakefile| load(rakefile) }
+Dir['tasks/**/*.rb'].each { |rakefile| load(rakefile) } if Dir.exists? "tasks"
+
+task :default => [ :help ]
