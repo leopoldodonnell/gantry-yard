@@ -1,12 +1,24 @@
-# Main Rakefile for gantry-yard
+# Main Rakefile for multi-tool
 
-gantry_libdir = '/gantry-yard/lib'
+mt_libdir = '/mt/lib'
 local_libdir = File.dirname(__FILE__) + '/lib'
-$LOAD_PATH.unshift(gantry_libdir) if Dir.exists? gantry_libdir
+$LOAD_PATH.unshift(mt_libdir) if Dir.exists? mt_libdir
 $LOAD_PATH.unshift(File.expand_path(local_libdir)) if Dir.exists? local_libdir
 
+require 'logger'
+require 'multi_tool/command'
+
+LOGGER = Logger.new(STDOUT)
+LOGGER.level = Logger::WARN
+
 # Load all default and user supplied Rakefiles
-Dir['/gantry-yard/tasks/**/*.rb'].each { |rakefile| load(rakefile) }
+Dir['/mt/tasks/**/*.rb'].each { |rakefile| load(rakefile) }
 Dir['tasks/**/*.rb'].each { |rakefile| load(rakefile) } if Dir.exists? "tasks"
 
+# Check if the requested task exists, try to run it as an application if it doesn't and exit with its status
+if ARGV.length > 2 and ARGV[2] != '-T' and ! Rake::Task.task_defined?(ARGV[2].gsub(/\[.*$/,''))
+  command = ARGV[2..-1].join(' ')
+  exit MultiTool::Command.run(command)
+end
+puts ARGV.inspect
 task :default => [ :help ]

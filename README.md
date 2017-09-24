@@ -1,47 +1,114 @@
-# gantry-yard
+# multi-tool
 
-![Docker Repository on Quay](https://quay.io/repository/leopoldodonnell/gantry-yard/status "Docker Repository on Quay")
+![Docker Repository on Quay](https://quay.io/repository/leopoldodonnell/multi-tool/status "Docker Repository on Quay")
+
+<p align='center'><img align="center" src="multi-tool.png" width="50%" height="50%"></p>
 
 **DOCUMENTATION IS UNDER CONSTRUCTION**
 
 A Ruby based DevOps Framework Tool for Container-based Development
 
+Multi-tool gives you a set of common tools for developers to manage tasks in a container native world. Firstly,
+it bundles a set of useful tools and secondly, it comes bundled with the *ruby* programming language and the [rake](https://github.com/ruby/rake) *make* tool. This enables a near zero-install toolbox that enables you to quickly
+specify build rules, or *tasks* for your projects.
+
+The current tool set includes the following tools:
+1. ruby : the ruby programming language
+1. rake : the rake build tool
+1. terraform : the Hashicorp Infrastructure as Code tool
+1. packer : the Hashicorp tool to build Machine Images
+1. docker : a docker client to enable docker in docker CICD tasks
+1. docker-compose : the docker-compose client to spin up docker containers using its specification
+1. kubectl : the Kubernetes API client
+1. helm : the Kubernetes deployment packaging tool
+1. ruby aws-sdk
+1. chef inspec : for IT Security and Compliance as Code
+1. ruby terraforming : used to initialize terraform projects from existing infrastructure
+
 ## Getting Started
 
-**gantry-yard** currently offers a Ruby Rake framework with the following tools available:
+To get started, make a copy of the the multi-tool bash script, copy it into your path and ensure that it is executable.
+
+**Run the container with the default output **
+
+```bash
+> multi-tool
+multi-tool - a tool for building and managing cloud infrastructure without a low installation footprint
+
+multi-tool currently offers a Ruby Rake framework with the following tools available:
     - terraform
     - packer
-    - kubectl
-    - helm
-    - stern
-    - docker
-    - docker-compose
-    - ruby aws-sdk
-    - ruby inpsec
-    - ruby terraforming
+...
 
-To learn about the available rake rules
+```
+**To learn about the available rake rules**
+```bash
+> multi-tool -T
+rake help  # Display a description of gantry-yard with helpful information
+```
 
-> docker --rm -ti -v ${PWD}:/share quay.io/leopoldodonnell/gantry-yard -T
+**To run run one of the included tools directly**
 
-To call a specific rake rule
+For example, to print out the version number of terraform
 
-> docker --rm -ti -v ${PWD}:/share quay.io/leopoldodonnell/gantry-yard {rake arguments}
+```bash
+> multi-tool terraform version
+Terraform v0.10.6
 
-While not always necessary, the following mount points will help you provide credentials to the available utilities:
+```
 
-  - /root/.aws  to access your AWS credentials
-  - /root/.ssh to access your own ssh credentials
-  - /root/.kube to access your Kubernetes kubectl configuration
-  - /root/.helm to access your Helm starters
-  - /var/run/docker.sock to share a docker socket for docker commands within the container
+## Using multi-tool
 
-## Using gantry-yard
+**multi-tool** comes with the bash script `multi-tool`. This will run the multi-tool container with appropriate volume mounts to
+access files and credentials.
 
-**gantry-yard** comes with the bash script `gantry-yard`. This will run the gantry-yard container with appropriate volume mounts
+**Usage:** multi-tool [-c workdir] [-d] [tool tool_args]
 
-**Usage:** gantry [-c workdir] [-d] [tool tool_args]
+* -c : run multi-tool from within another docker container and use its volume mounts using
+the workdir argument as the working directory for the multi-tool container. This is useful for CIDCD tools like Jenkins
+* -d : debug mode. Drop into the container using bash as an interactive entry point. This is useful if you're going to interactively
+use a number of the tools. It will mount your current working directory, so you'll have access to your local files.
 
-* -c : run gantry from within another docker container and use its volume mounts using
-the workdir argument as the working directory for the gantry container
-* -d : debug mode. Drop into the container using bash as an interactive entry point
+If you take a closer look at the multi-tool script you'll find the following mount points which may not always be required:
+
+* /root/.aws  to access your AWS credentials
+* /root/.ssh to access your own ssh credentials
+* /root/.kube to access your Kubernetes kubectl configuration
+* /root/.helm to access your Helm starters and repos
+* /var/run/docker.sock to share a docker socket for docker commands within the container
+
+
+## Writing Your Own Tasks
+
+**multi-tool** will look for a `tasks` directory under the current working directory. When it finds this directory, it will
+load all of the ruby code that is found there. This can be your own rake tasks, or ruby library code you've written to support
+your tasks.
+
+Here's an example:
+
+```bash
+# Create the tasks directory
+> mkdir tasks
+
+# Add a ruby file with a rake task
+
+cat <<EOF > tasks/my_tasks.rb
+namespace :my_project do
+  desc 'Here is my example task'
+  task :example, [:first, :second] do |t, args|
+    puts args[:first]
+    puts args[:second]
+  end
+end
+EOF
+
+> multi-tool -T
+rake help                              # Display a description of gantry-yard with helpful information
+rake my_project:example[first,second]  # Here is my example task
+
+# Run multi-tool with this task
+> multi-tool my_project:example[hello, world]
+hello
+world
+```
+

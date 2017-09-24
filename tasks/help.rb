@@ -3,9 +3,9 @@ desc "Display a description of gantry-yard with helpful information"
 task :help do
   puts <<~HEREDOC
 
-  gantry-yard - a scaffold for building and managing cloud infrastructure without a low installation footprint
+  multi-tool - a tool for building and managing cloud infrastructure without a low installation footprint
 
-  gantry-yard currently offers a Ruby Rake framework with the following tools available:
+  multi-tool currently offers a Ruby Rake framework with the following tools available:
       - terraform
       - packer
       - kubectl

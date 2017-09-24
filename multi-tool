@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# gantry-yard - Run the gantry-yard container with appropriate volume mounts
+# multi-tool - Run the multi-tool container with appropriate volume mounts
 #
 # Usage: gantry [-c workdir] [-d] [tool tool_args]
 #
@@ -9,7 +9,7 @@
 #   -d : debug mode. Drop into the container using bash as an interactive entry point
 #
 
-DOCKER_IMAGE="gantry-yard"
+DOCKER_IMAGE="multi-tool"
 
 # Update this if you're using a private docker registry
 REGISTRY="quay.io/leopoldodonnell/"
