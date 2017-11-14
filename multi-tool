@@ -7,6 +7,7 @@
 #   -c : run gantry from within another docker container and use its volume mounts using
 #        the workdir argument as the working directory for the gantry container
 #   -d : debug mode. Drop into the container using bash as an interactive entry point
+#   -m : use the minikube docker enviroment to simplify local work
 #
 
 DOCKER_IMAGE="multi-tool"
@@ -23,16 +24,26 @@ VOLUMES="-v $HOME/.aws:/root/.aws \
 
 opt_count=0
 
-while getopts "c:d" arg > /dev/null 2>&1; do
-  case "${arg}" in
+while getopts "dmc:" opt ; do
+  case "${opt}" in
     c)
       opt_count=$((opt_count + 2))
       MY_CONTAINER_ID=`cat /proc/self/cgroup |awk -F '/' '$2 = "docker" && NR == 1 {print $NF }'`
       VOLUMES="--volumes-from ${MY_CONTAINER_ID} -w ${OPTARG}"
       ;;
     d)
-      opt_count=$((optCount + 1))
+      opt_count=$((opt_count + 1))
       DEBUG="-ti --entrypoint /bin/bash"
+      ;;
+    m)
+      opt_count=$((opt_count + 1))
+      eval $(minikube docker-env)
+      read -r -d '' MINIKUBE_ENV <<EOF
+        -e DOCKER_TLS_VERIFY=$DOCKER_TLS_VERIFY
+        -e DOCKER_HOST=$DOCKER_HOST
+        -e DOCKER_CERT_PATH=$DOCKER_CERT_PATH
+        -e DOCKER_API_VERSION=$DOCKER_API_VERSION
+EOF
       ;;
     *)
       ;;
@@ -44,5 +55,6 @@ shift $opt_count
 
 docker run --rm \
   ${VOLUMES} \
+  ${MINIKUBE_ENV} \
   ${DEBUG} \
   ${REGISTRY}${DOCKER_IMAGE} $@
