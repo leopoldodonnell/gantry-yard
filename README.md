@@ -4,12 +4,10 @@
 
 <p align='center'><img align="center" src="multi-tool.png" width="50%" height="50%"></p>
 
-**DOCUMENTATION IS UNDER CONSTRUCTION**
-
 A Ruby based DevOps Framework Tool for Container-based Development
 
-Multi-tool gives you a set of common tools for developers to manage tasks in a container native world. Firstly,
-it bundles a set of useful tools and secondly, it comes bundled with the *ruby* programming language and the [rake](https://github.com/ruby/rake) *make* tool. This enables a near zero-install toolbox that enables you to quickly
+Multi-tool gives provides a consistent set of common tools for developers to manage tasks in a container native world. Firstly,
+it bundles a set of useful tools and secondly, it comes bundled with the *ruby* programming language and the [rake](https://github.com/ruby/rake) *make* tool. This enables a near zero-install toolbox that lets you to quickly
 specify build rules, or *tasks* for your projects.
 
 The current tool set includes the following tools:
@@ -47,6 +45,11 @@ multi-tool currently offers a Ruby Rake framework with the following tools avail
 rake help  # Display a description of gantry-yard with helpful information
 ```
 
+**To run an available rake rule**
+```bash
+> multi-tool -t {rake rule}
+```
+
 **To run run one of the included tools directly**
 
 For example, to print out the version number of terraform
@@ -62,19 +65,21 @@ Terraform v0.10.6
 **multi-tool** comes with the bash script `multi-tool`. This will run the multi-tool container with appropriate volume mounts to
 access files and credentials.
 
-**Usage:** multi-tool [-c workdir] [-d] [tool tool_args]
+**Usage:** multi-tool [-c workdir] [-d] [-T] [-t] [tool tool_args]
 
 * -c : run multi-tool from within another docker container and use its volume mounts using
 the workdir argument as the working directory for the multi-tool container. This is useful for CIDCD tools like Jenkins
 * -d : debug mode. Drop into the container using bash as an interactive entry point. This is useful if you're going to interactively
 use a number of the tools. It will mount your current working directory, so you'll have access to your local files.
+* -t : run a rake task
+* -T : display available rake tasks
 
 If you take a closer look at the multi-tool script you'll find the following mount points which may not always be required:
 
-* /root/.aws  to access your AWS credentials
-* /root/.ssh to access your own ssh credentials
-* /root/.kube to access your Kubernetes kubectl configuration
-* /root/.helm to access your Helm starters and repos
+* /mthome/.aws  to access your AWS credentials
+* /mthome/.ssh to access your own ssh credentials
+* /mthome/.kube to access your Kubernetes kubectl configuration
+* /mthome/.helm to access your Helm starters and repos
 * /var/run/docker.sock to share a docker socket for docker commands within the container
 
 
@@ -107,7 +112,7 @@ rake help                              # Display a description of gantry-yard wi
 rake my_project:example[first,second]  # Here is my example task
 
 # Run multi-tool with this task
-> multi-tool my_project:example[hello, world]
+> multi-tool -t my_project:example[hello, world]
 hello
 world
 ```

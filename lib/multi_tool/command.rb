@@ -12,6 +12,7 @@ module MultiTool
     # block (block) a code block that receives a line of input for each line of command output
     #
     def self.run(command_line, &block)
+      LOGGER.debug("Running command: #{command_line}")
       status = false
       Open3.popen2(command_line) do | stdin, stdout, thread |
         stdin.close

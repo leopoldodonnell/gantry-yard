@@ -2,10 +2,10 @@
 #
 # multi-tool - Run the multi-tool container with appropriate volume mounts
 #
-# Usage: gantry [-c workdir] [-d] [tool tool_args]
+# Usage: multi-tool [-c workdir] [-d] [tool tool_args]
 #
-#   -c : run gantry from within another docker container and use its volume mounts using
-#        the workdir argument as the working directory for the gantry container
+#   -c : run multi-tool from within another docker container and use its volume mounts using
+#        the workdir argument as the working directory for the multi-tool container
 #   -d : debug mode. Drop into the container using bash as an interactive entry point
 #   -m : use the minikube docker enviroment to simplify local work
 #
@@ -13,29 +13,29 @@
 DOCKER_IMAGE="multi-tool"
 
 # Update this if you're using a private docker registry
-REGISTRY="quay.io/leopoldodonnell/"
+# REGISTRY="quay.io/leopoldodonnell/"
 
-VOLUMES="-v $HOME/.aws:/root/.aws \
+VOLUMES="-v $HOME/.aws:/mthome/.aws \
         -v ${PWD}:/share \
-        -v $HOME/.kube:/root/.kube \
+        -v $HOME/.kube:/mthome/.kube \
         -v $HOME/.minikube:$HOME/.minikube \
-        -v $HOME/.helm:/root/.helm \
+        -v $HOME/.helm:/mthome/.helm \
         -v /var/run/docker.sock:/var/run/docker.sock"
 
 opt_count=0
 
-while getopts "dmc:" opt ; do
+while getopts "dmtTc:" opt ; do
   case "${opt}" in
-    c)
+    c) # Run multi-tool from within another container
       opt_count=$((opt_count + 2))
       MY_CONTAINER_ID=`cat /proc/self/cgroup |awk -F '/' '$2 = "docker" && NR == 1 {print $NF }'`
       VOLUMES="--volumes-from ${MY_CONTAINER_ID} -w ${OPTARG}"
       ;;
-    d)
+    d) # Drop into a shell inside the multi-tool container
       opt_count=$((opt_count + 1))
       DEBUG="-ti --entrypoint /bin/bash"
       ;;
-    m)
+    m) # Use the minikube environment
       opt_count=$((opt_count + 1))
       eval $(minikube docker-env)
       read -r -d '' MINIKUBE_ENV <<EOF
@@ -44,6 +44,14 @@ while getopts "dmc:" opt ; do
         -e DOCKER_CERT_PATH=$DOCKER_CERT_PATH
         -e DOCKER_API_VERSION=$DOCKER_API_VERSION
 EOF
+      ;;
+    t) # Run a raketask
+      opt_count=$((opt_count + 1))
+      RAKE='rake -f /mt/tasks/Rakefile'
+      ;;
+    T) # Display available Rake tasks
+      opt_count=$((opt_count + 1))
+      RAKE='rake -f /mt/tasks/Rakefile -T'
       ;;
     *)
       ;;
@@ -57,4 +65,4 @@ docker run --rm \
   ${VOLUMES} \
   ${MINIKUBE_ENV} \
   ${DEBUG} \
-  ${REGISTRY}${DOCKER_IMAGE} $@
+  ${REGISTRY}${DOCKER_IMAGE} $RAKE $@
