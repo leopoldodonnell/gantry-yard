@@ -17,7 +17,7 @@ RUN apk add --no-cache \
       
 
 # Install Packer
-ARG PACKER_VERSION='1.1.3'
+ARG PACKER_VERSION='1.2.1'
 RUN curl -L -o packer_${PACKER_VERSION}_linux_amd64.zip https://releases.hashicorp.com/packer/${PACKER_VERSION}/packer_${PACKER_VERSION}_linux_amd64.zip && \
     curl -L -o packer_${PACKER_VERSION}_SHA256SUMS https://releases.hashicorp.com/packer/${PACKER_VERSION}/packer_${PACKER_VERSION}_SHA256SUMS && \
     sed -i "/packer_${PACKER_VERSION}_linux_amd64.zip/!d" packer_${PACKER_VERSION}_SHA256SUMS && \
@@ -26,7 +26,7 @@ RUN curl -L -o packer_${PACKER_VERSION}_linux_amd64.zip https://releases.hashico
     rm -f packer_${PACKER_VERSION}_linux_amd64.zip
 
 # Install terraform
-ARG TERRAFORM_VERSION='0.11.1'
+ARG TERRAFORM_VERSION='0.11.3'
 RUN curl -L -o terraform_${TERRAFORM_VERSION}_linux_amd64.zip https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip && \
     curl -L -o terraform_${TERRAFORM_VERSION}_SHA256SUMS https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_SHA256SUMS && \
     sed -i "/terraform_${TERRAFORM_VERSION}_linux_amd64.zip/!d" terraform_${TERRAFORM_VERSION}_SHA256SUMS && \
@@ -37,7 +37,7 @@ RUN curl -L -o terraform_${TERRAFORM_VERSION}_linux_amd64.zip https://releases.h
 
 
 # Install kubectl
-ARG KUBECTL_VERSION='1.8.6'
+ARG KUBECTL_VERSION='1.9.3'
 RUN curl -L -o /bin/kubectl https://storage.googleapis.com/kubernetes-release/release/v${KUBECTL_VERSION}/bin/linux/amd64/kubectl && \
     chmod +x /bin/kubectl
 
@@ -47,7 +47,7 @@ RUN curl -L -o /bin/stern https://github.com/wercker/stern/releases/download/${S
     chmod +x /bin/stern
 
 
-ARG HELM_VERSION="2.7.2"
+ARG HELM_VERSION="2.8.2"
 RUN curl -L -o helm-v${HELM_VERSION}-linux-amd64.tar.gz http://storage.googleapis.com/kubernetes-helm/helm-v${HELM_VERSION}-linux-amd64.tar.gz && \
     tar xf helm-v${HELM_VERSION}-linux-amd64.tar.gz && \
     cp linux-amd64/helm /bin/helm && \
@@ -67,17 +67,26 @@ RUN apk -Uuv add groff less python py-pip && \
     apk --purge -v del py-pip && \
     rm /var/cache/apk/*
 
+# Install Google Cloud Tools
+ARG GCLOUD_VERSION='192.0.0'
+RUN curl -L -o /tmp/gcloud.tar.gz https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-${GCLOUD_VERSION}-linux-x86_64.tar.gz && \
+    cd /usr/local/ && \
+    tar xvf /tmp/gcloud.tar.gz && \
+    ./google-cloud-sdk/install.sh --quiet && \
+    rm /tmp/gcloud.tar.gz
+ENV PATH "/usr/local/google-cloud-sdk/bin:${PATH}"
+
+# Add the ruby libraries and built in tasks
 ADD lib /mt/lib
 ADD built-in-tasks /mt/tasks
 
+# Create an app user/group and run as this user by default
 RUN mkdir -p /mthome \
   && addgroup -S app \
   && adduser -S -G app -h /mthome -D app
 
-VOLUME ["/share", "/mthome/.aws", "/mthome/.kube", "/mthome/.ssh", "/mthome/.helm", "/var/run/docker.sock" ]
-
 USER app
-
 WORKDIR /share
 
+VOLUME ["/share", "/mthome/.aws", "/mthome/.config", "/mthome/.kube", "/mthome/.ssh", "/mthome/.helm", "/var/run/docker.sock" ]
 CMD [ "rake", "--rakefile", "/mt/tasks/Rakefile" ]
