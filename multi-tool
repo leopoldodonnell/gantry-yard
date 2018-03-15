@@ -16,6 +16,7 @@ DOCKER_IMAGE="multi-tool"
 # REGISTRY="quay.io/leopoldodonnell/"
 
 VOLUMES="-v $HOME/.aws:/mthome/.aws \
+        -v $HOME/.config:/mthome/.config \
         -v ${PWD}:/share \
         -v $HOME/.kube:/mthome/.kube \
         -v $HOME/.minikube:$HOME/.minikube \

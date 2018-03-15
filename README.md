@@ -6,9 +6,13 @@
 
 A Ruby based DevOps Framework Tool for Container-based Development
 
-Multi-tool gives provides a consistent set of common tools for developers to manage tasks in a container native world. Firstly,
-it bundles a set of useful tools and secondly, it comes bundled with the *ruby* programming language and the [rake](https://github.com/ruby/rake) *make* tool. This enables a near zero-install toolbox that lets you to quickly
+Multi-tool provides a consistent set of common tools for developers to manage tasks in a container native world. Firstly, it bundles a set of useful tools and secondly, it comes bundled with the *ruby* programming language and the [rake](https://github.com/ruby/rake)
+*make* tool. This enables a near zero-install toolbox that lets you to quickly
 specify build rules, or *tasks* for your projects.
+
+Currently supports: **AWS**, **Google Cloud**
+
+TODO: Add Azure
 
 The current tool set includes the following tools:
 1. ruby : the ruby programming language
@@ -19,8 +23,9 @@ The current tool set includes the following tools:
 1. docker-compose : the docker-compose client to spin up docker containers using its specification
 1. kubectl : the Kubernetes API client
 1. helm : the Kubernetes deployment packaging tool
-1. ruby aws-sdk
-1. chef inspec : for IT Security and Compliance as Code
+1. cloud cli's : aws, gcloud
+1. ruby aws-sdk, google-cloud
+1. ~~chef inspec : for IT Security and Compliance as Code~~ waiting for AWS SDK 3 support
 1. ruby terraforming : used to initialize terraform projects from existing infrastructure
 
 ## Getting Started
@@ -77,6 +82,7 @@ use a number of the tools. It will mount your current working directory, so you'
 If you take a closer look at the multi-tool script you'll find the following mount points which may not always be required:
 
 * /mthome/.aws  to access your AWS credentials
+* /mthome/.config to access your Google Cloud credentials
 * /mthome/.ssh to access your own ssh credentials
 * /mthome/.kube to access your Kubernetes kubectl configuration
 * /mthome/.helm to access your Helm starters and repos
@@ -116,4 +122,3 @@ rake my_project:example[first,second]  # Here is my example task
 hello
 world
 ```
-

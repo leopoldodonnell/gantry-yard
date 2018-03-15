@@ -15,10 +15,4 @@ LOGGER.level = Logger::WARN
 Dir['/mt/tasks/**/*.rb'].each { |rakefile| load(rakefile) }
 Dir['tasks/**/*.rb'].each { |rakefile| load(rakefile) } if Dir.exists? "tasks"
 
-# Check if the requested task exists, try to run it as an application if it doesn't and exit with its status
-if ARGV.length > 2 and ARGV[2] != '-T' and ! Rake::Task.task_defined?(ARGV[2].gsub(/\[.*$/,''))
-  command = ARGV[2..-1].join(' ')
-  exit MultiTool::Command.run(command)
-end
-puts ARGV.inspect
 task :default => [ :help ]
