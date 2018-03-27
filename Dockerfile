@@ -1,4 +1,4 @@
-FROM ruby:2.5-slim
+FROM ruby:2.3.6-slim-jessie
 
 RUN apt-get update -qq && \
     apt-get install -qqy --no-install-recommends \
@@ -18,9 +18,7 @@ RUN apt-get update -qq && \
       libffi-dev \
       lsb-release \
       python-all \
-      rlwrap \
-      vim \
-      nano
+      rlwrap
 
 RUN apt-get install -qqy gnupg2 software-properties-common
 RUN curl -fsSL https://download.docker.com/linux/debian/gpg | apt-key add - ; \
