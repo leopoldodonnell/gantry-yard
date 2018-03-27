@@ -13,3 +13,4 @@ gem "terraforming", '~>0.16.0'
 
 gem 'aws-sdk', '~>3'
 gem 'google-cloud', '~> 0.51.0'
+gem 'azure', '~> 0.7.1'
