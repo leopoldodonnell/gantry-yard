@@ -12,7 +12,6 @@ RUN apt-get update -qq && \
       openssh-client \
       util-linux \
       openssl \
-      graphviz \
       build-essential \
       libxml2-dev \
       libffi-dev \
