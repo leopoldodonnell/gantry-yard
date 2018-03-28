@@ -1,4 +1,4 @@
-FROM ruby:2.3.6-slim-jessie
+FROM ruby:slim-stretch
 
 RUN apt-get update -qq && \
     apt-get install -qqy --no-install-recommends \
