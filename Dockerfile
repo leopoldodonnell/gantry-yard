@@ -57,7 +57,6 @@ WORKDIR /
 COPY Gemfile /
 
 RUN bundle install --system
-# RUN apk del build-base
 
 # Install the aws cli - can't specify versions
 ENV NODEJS_VERSION "8.9.3-r0"
@@ -107,7 +106,7 @@ RUN \
     azure
 
 # Install the aws cli - can't specify versions
-RUN apk --purge -v del py-pip && \
+RUN apk --purge -v del py-pip build-base && \
     rm /var/cache/apk/*
 
 # Add the ruby libraries and built in tasks
