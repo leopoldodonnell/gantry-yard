@@ -1,8 +1,6 @@
-FROM ruby:slim-stretch
+FROM ruby:alpine
 
-RUN apt-get update -qq && \
-    apt-get install -qqy --no-install-recommends \
-      apt-transport-https \
+RUN apk add --no-cache \
       unzip \
       git \
       bash \
@@ -12,22 +10,11 @@ RUN apt-get update -qq && \
       openssh-client \
       util-linux \
       openssl \
-      build-essential \
+      build-base \
       libxml2-dev \
       libffi-dev \
-      lsb-release \
-      python-all \
-      rlwrap
-
-RUN apt-get install -qqy gnupg2 software-properties-common
-RUN curl -fsSL https://download.docker.com/linux/debian/gpg | apt-key add - ; \
-    apt-key fingerprint 0EBFCD88 && \
-    add-apt-repository \
-    "deb [arch=amd64] https://download.docker.com/linux/debian \
-    $(lsb_release -cs) \
-    stable" && \
-    apt-get update && \
-    apt-get install -qqy docker-ce
+      python-dev \
+      docker
 
 # Install Packer
 ARG PACKER_VERSION='1.2.2'
@@ -73,14 +60,12 @@ RUN bundle install --system
 # RUN apk del build-base
 
 # Install the aws cli - can't specify versions
-RUN apt-get install -qqy less python-pip groff
+ENV NODEJS_VERSION "8.9.3-r0"
 
-RUN \
+RUN apk -Uuv add groff less py-pip nodejs=${NODEJS_VERSION} nodejs-npm=${NODEJS_VERSION} && \
     pip install --upgrade pip && \
     pip install awscli && \
     pip install docker-compose
-    # apk --purge -v del py-pip && \
-    # rm /var/cache/apk/*
 
 # Install Google Cloud Tools
 ARG GCLOUD_VERSION='192.0.0'
@@ -93,25 +78,39 @@ ENV PATH "/usr/local/google-cloud-sdk/bin:${PATH}"
 
 # Install AZURE_CLI
 ENV AZURE_CLI_VERSION "0.10.13"
-ENV NODEJS_APT_ROOT "node_6.x"
-ENV NODEJS_VERSION "6.10.0"
+# ENV NODEJS_APT_ROOT "node_6.x"
+# ENV NODEJS_VERSION "6.10.0"
 
-RUN curl https://deb.nodesource.com/${NODEJS_APT_ROOT}/pool/main/n/nodejs/nodejs_${NODEJS_VERSION}-1nodesource1~jessie1_amd64.deb > node.deb && \
-      dpkg -i node.deb && \
-      rm node.deb && \
-      npm install --global azure-cli@${AZURE_CLI_VERSION} && \
-      mkdir -p ~/.azure && echo '{ "telemetry": false}' > ~/.azure/telemetry.json; \
-      azure --completion >> ~/azure.completion.sh && \
-      echo 'source ~/azure.completion.sh' >> ~/.bashrc && \
-      azure
+RUN addgroup -g 1000 node \
+    && adduser -u 1000 -G node -s /bin/sh -D node && \
+    chown -R node /usr/lib/node_modules && chgrp -R node /usr/lib/node_modules && \
+    chgrp node /usr/bin && chmod g+w /usr/bin
+
+USER node
+
+RUN npm install --global --production --quiet azure-cli
+
+USER root 
+RUN chgrp root /usr/bin && chmod 0755 /usr/bin
+
+RUN \
+    mkdir -p ~/.azure && echo '{ "telemetry": false}' > ~/.azure/telemetry.json; \
+    azure --completion >> ~/azure.completion.sh && \
+    echo 'source ~/azure.completion.sh' >> ~/.bashrc && \
+    azure
+
+# Install the aws cli - can't specify versions
+RUN apk --purge -v del py-pip && \
+    rm /var/cache/apk/*
 
 # Add the ruby libraries and built in tasks
 ADD lib /mt/lib
 ADD built-in-tasks /mt/tasks
 
 # Create an app user/group and run as this user by default
-RUN addgroup --system app \
-  && adduser --system --gid 0 --home /mthome --disabled-password app && usermod -a -G app app
+RUN mkdir -p /mthome \
+  && addgroup -S app \
+  && adduser -S -G app -h /mthome -D app
 
 USER app
 WORKDIR /share
