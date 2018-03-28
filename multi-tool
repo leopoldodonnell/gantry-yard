@@ -10,13 +10,14 @@
 #   -m : use the minikube docker enviroment to simplify local work
 #
 
-DOCKER_IMAGE="multi-tool:v0.3.0"
+DOCKER_IMAGE="multi-tool:v0.4.0"
 
 # Update this if you're using a private docker registry
 REGISTRY="quay.io/leopoldodonnell/"
 
 VOLUMES="-v $HOME/.aws:/mthome/.aws \
         -v $HOME/.config:/mthome/.config \
+        -v $HOME/.config:/mthome/.azure \
         -v ${PWD}:/share \
         -v $HOME/.kube:/mthome/.kube \
         -v $HOME/.minikube:$HOME/.minikube \

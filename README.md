@@ -10,9 +10,8 @@ Multi-tool provides a consistent set of common tools for developers to manage ta
 *make* tool. This enables a near zero-install toolbox that lets you to quickly
 specify build rules, or *tasks* for your projects.
 
-Currently supports: **AWS**, **Google Cloud**
+Currently supports: **AWS**, **Google Cloud**, **Azure**
 
-TODO: Add Azure
 
 The current tool set includes the following tools:
 1. ruby : the ruby programming language
@@ -23,8 +22,8 @@ The current tool set includes the following tools:
 1. docker-compose : the docker-compose client to spin up docker containers using its specification
 1. kubectl : the Kubernetes API client
 1. helm : the Kubernetes deployment packaging tool
-1. cloud cli's : aws, gcloud
-1. ruby aws-sdk, google-cloud
+1. cloud cli's : aws, gcloud, azure
+1. ruby aws-sdk, google-cloud, azure
 1. ~~chef inspec : for IT Security and Compliance as Code~~ waiting for AWS SDK 3 support
 1. ruby terraforming : used to initialize terraform projects from existing infrastructure
 
@@ -83,6 +82,7 @@ If you take a closer look at the multi-tool script you'll find the following mou
 
 * /mthome/.aws  to access your AWS credentials
 * /mthome/.config to access your Google Cloud credentials
+* /mthome/.azure to access your Azure credentials
 * /mthome/.ssh to access your own ssh credentials
 * /mthome/.kube to access your Kubernetes kubectl configuration
 * /mthome/.helm to access your Helm starters and repos
