@@ -1,4 +1,4 @@
-FROM ruby:alpine
+FROM ruby:2.5.0-alpine3.7
 
 RUN apk add --no-cache \
       unzip \
@@ -77,9 +77,15 @@ RUN curl -L -o /tmp/gcloud.tar.gz https://dl.google.com/dl/cloudsdk/channels/rap
 ENV PATH "/usr/local/google-cloud-sdk/bin:${PATH}"
 
 # Install AZURE_CLI
+#
+# There are a few issues with the azure install.
+# 1. The installation only works as the 'node' users
+# 1. Azure needs permission to link to /usr/bin/azure to succeed
+#
+# The workaround is to: create the node group and user, fix node_module ownership and
+# temorarily set the /usr/bin permissions and ownership so node can update the link
+
 ENV AZURE_CLI_VERSION "0.10.13"
-# ENV NODEJS_APT_ROOT "node_6.x"
-# ENV NODEJS_VERSION "6.10.0"
 
 RUN addgroup -g 1000 node \
     && adduser -u 1000 -G node -s /bin/sh -D node && \
@@ -88,8 +94,9 @@ RUN addgroup -g 1000 node \
 
 USER node
 
-RUN npm install --global --production --quiet azure-cli
+RUN npm install --global --production --quiet azure-cli@${AZURE_CLI_VERSION}
 
+# Restore root permissions after the azure installation
 USER root 
 RUN chgrp root /usr/bin && chmod 0755 /usr/bin
 
