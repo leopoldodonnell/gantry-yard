@@ -13,7 +13,7 @@ RUN apk add --no-cache \
       build-base \
       libxml2-dev \
       libffi-dev \
-      python-dev \
+      python \
       docker
 
 # Install Packer
@@ -58,52 +58,23 @@ COPY Gemfile /
 
 RUN bundle install --system
 
-# Install the aws cli - can't specify versions
-ENV NODEJS_VERSION "8.9.3-r0"
-
-RUN apk -Uuv add groff less py-pip nodejs=${NODEJS_VERSION} nodejs-npm=${NODEJS_VERSION} && \
+# Install the AWS CLI and docker-compose
+RUN apk -Uuv add python-dev py-pip && \
     pip install --upgrade pip && \
     pip install awscli && \
     pip install docker-compose
 
 # Install Google Cloud Tools
 ARG GCLOUD_VERSION='192.0.0'
+ENV PATH "/usr/local/google-cloud-sdk/bin:${PATH}"
 RUN curl -L -o /tmp/gcloud.tar.gz https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-${GCLOUD_VERSION}-linux-x86_64.tar.gz && \
     cd /usr/local/ && \
     tar xvf /tmp/gcloud.tar.gz && \
     ./google-cloud-sdk/install.sh --quiet && \
     rm /tmp/gcloud.tar.gz
-ENV PATH "/usr/local/google-cloud-sdk/bin:${PATH}"
 
-# Install AZURE_CLI
-#
-# There are a few issues with the azure install.
-# 1. The installation only works as the 'node' users
-# 1. Azure needs permission to link to /usr/bin/azure to succeed
-#
-# The workaround is to: create the node group and user, fix node_module ownership and
-# temorarily set the /usr/bin permissions and ownership so node can update the link
-
-ENV AZURE_CLI_VERSION "0.10.13"
-
-RUN addgroup -g 1000 node \
-    && adduser -u 1000 -G node -s /bin/sh -D node && \
-    chown -R node /usr/lib/node_modules && chgrp -R node /usr/lib/node_modules && \
-    chgrp node /usr/bin && chmod g+w /usr/bin
-
-USER node
-
-RUN npm install --global --production --quiet azure-cli@${AZURE_CLI_VERSION}
-
-# Restore root permissions after the azure installation
-USER root 
-RUN chgrp root /usr/bin && chmod 0755 /usr/bin
-
-RUN \
-    mkdir -p ~/.azure && echo '{ "telemetry": false}' > ~/.azure/telemetry.json; \
-    azure --completion >> ~/azure.completion.sh && \
-    echo 'source ~/azure.completion.sh' >> ~/.bashrc && \
-    azure
+# Install our version of az - which depends on docker
+COPY az /usr/local/bin/az
 
 # Install the aws cli - can't specify versions
 RUN apk --purge -v del py-pip build-base && \
@@ -116,7 +87,8 @@ ADD built-in-tasks /mt/tasks
 # Create an app user/group and run as this user by default
 RUN mkdir -p /mthome \
   && addgroup -S app \
-  && adduser -S -G app -h /mthome -D app
+  && adduser -S -G app -h /mthome -D app \
+  && addgroup app root
 
 USER app
 WORKDIR /share
