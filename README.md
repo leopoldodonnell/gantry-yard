@@ -22,7 +22,7 @@ The current tool set includes the following tools:
 1. docker-compose : the docker-compose client to spin up docker containers using its specification
 1. kubectl : the Kubernetes API client
 1. helm : the Kubernetes deployment packaging tool
-1. cloud cli's : aws, gcloud, azure
+1. cloud cli's : aws, gcloud, azure (**note:** uses the cli 2.0 container)
 1. ruby aws-sdk, google-cloud, azure
 1. ~~chef inspec : for IT Security and Compliance as Code~~ waiting for AWS SDK 3 support
 1. ruby terraforming : used to initialize terraform projects from existing infrastructure

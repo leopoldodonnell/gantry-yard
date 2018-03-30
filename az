@@ -1,0 +1,5 @@
+#!/bin/sh
+DOCKER_IMAGE='azuresdk/azure-cli-python'
+DOCKER_TAG='latest'
+
+docker run -ti --rm -v ${AZURE_CONFIG}:/root/.azure ${DOCKER_IMAGE}:${DOCKER_TAG} az $@

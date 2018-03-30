@@ -9,19 +9,34 @@
 #   -d : debug mode. Drop into the container using bash as an interactive entry point
 #   -m : use the minikube docker enviroment to simplify local work
 #
+# Available environment override variables:
+#
+# MULTI_TOOL_TAG = specifies the tag to use for multi-tool
+# (AZURE,AWS,GOOGLE,KUBE,HELM)_CONFIG specify the respective config directories
+#
 
-DOCKER_IMAGE="multi-tool:v0.4.0"
+MULTI_TOOL_TAG=${MULTI_TOOL_TAG:-v0.5.0}
+DOCKER_IMAGE="multi-tool:$MULTI_TOOL_TAG"
 
 # Update this if you're using a private docker registry
 REGISTRY="quay.io/leopoldodonnell/"
 
-VOLUMES="-v $HOME/.aws:/mthome/.aws \
-        -v $HOME/.config:/mthome/.config \
-        -v $HOME/.config:/mthome/.azure \
+# Provide defaults with environment variable overrides for config directories
+AZURE_CONFIG=${AZURE_CONFIG:-$HOME/.azure}
+AWS_CONFIG=${AWS_CONFIG:-$HOME/.aws}
+GOOGLE_CONFIG=${GOOGLE_CONFIG:-$HOME/.config}
+KUBE_CONFIG=${KUBE_CONFIG:-$HOME/.kube}
+MINIKUBE_CONFIG=${MINIKUBE_CONFIG:-$HOME/.minikube}
+HELM_CONFIG=${HELM_CONFIG:-$HOME/.helm}
+
+
+VOLUMES="-v $AWS_CONFIG:/mthome/.aws \
+        -v $GOOGLE_CONFIG:/mthome/.config \
+        -e AZURE_CONFIG=$AZURE_CONFIG \
         -v ${PWD}:/share \
-        -v $HOME/.kube:/mthome/.kube \
-        -v $HOME/.minikube:$HOME/.minikube \
-        -v $HOME/.helm:/mthome/.helm \
+        -v $KUBE_CONFIG:/mthome/.kube \
+        -v $MINIKUBE_CONFIG:$HOME/.minikube \
+        -v $HELM_CONFIG:/mthome/.helm \
         -v /var/run/docker.sock:/var/run/docker.sock"
 
 opt_count=0
@@ -63,7 +78,7 @@ done
 # get rid of options passed the to script and not passed onto the container
 shift $opt_count
 
-docker run --rm \
+docker run -ti --rm \
   ${VOLUMES} \
   ${MINIKUBE_ENV} \
   ${DEBUG} \
