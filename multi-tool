@@ -28,6 +28,7 @@ GOOGLE_CONFIG=${GOOGLE_CONFIG:-$HOME/.config}
 KUBE_CONFIG=${KUBE_CONFIG:-$HOME/.kube}
 MINIKUBE_CONFIG=${MINIKUBE_CONFIG:-$HOME/.minikube}
 HELM_CONFIG=${HELM_CONFIG:-$HOME/.helm}
+SSH_CONFIG=${SSH_CONFIG:-$HOME/.ssh}
 
 
 VOLUMES="-v $AWS_CONFIG:/mthome/.aws \
@@ -37,6 +38,7 @@ VOLUMES="-v $AWS_CONFIG:/mthome/.aws \
         -v $KUBE_CONFIG:/mthome/.kube \
         -v $MINIKUBE_CONFIG:$HOME/.minikube \
         -v $HELM_CONFIG:/mthome/.helm \
+        -v $SSH_CONFIG:/mthome/.ssh \
         -v /var/run/docker.sock:/var/run/docker.sock"
 
 opt_count=0

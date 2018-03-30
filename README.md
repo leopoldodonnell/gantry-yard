@@ -82,12 +82,20 @@ If you take a closer look at the multi-tool script you'll find the following mou
 
 * /mthome/.aws  to access your AWS credentials
 * /mthome/.config to access your Google Cloud credentials
-* /mthome/.azure to access your Azure credentials
 * /mthome/.ssh to access your own ssh credentials
 * /mthome/.kube to access your Kubernetes kubectl configuration
 * /mthome/.helm to access your Helm starters and repos
 * /var/run/docker.sock to share a docker socket for docker commands within the container
 
+**NB:** Azure is run via its container image by multi-tool (ie docker in docker).
+
+Configuration directories can be overridden via the following environment variables:
+* `AZURE_CONFIG`
+* `AWS_CONFIG`
+* `GOOGLE_CONFIG`
+* `KUBE_CONFIG`
+* `HELM_CONFIG`
+* `SSH_CONFIG`
 
 ## Writing Your Own Tasks
 
