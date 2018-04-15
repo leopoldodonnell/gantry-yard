@@ -34,6 +34,7 @@ SSH_CONFIG=${SSH_CONFIG:-$HOME/.ssh}
 VOLUMES="-v $AWS_CONFIG:/mthome/.aws \
         -v $GOOGLE_CONFIG:/mthome/.config \
         -e AZURE_CONFIG=$AZURE_CONFIG \
+        -v $AZURE_CONFIG:/mthome/.azure \
         -v ${PWD}:/share \
         -v $KUBE_CONFIG:/mthome/.kube \
         -v $MINIKUBE_CONFIG:$HOME/.minikube \
