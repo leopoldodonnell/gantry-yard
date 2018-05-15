@@ -35,9 +35,16 @@ RUN curl -L -o terraform_${TERRAFORM_VERSION}_linux_amd64.zip https://releases.h
     rm -f terraform_${TERRAFORM_VERSION}_linux_amd64.zip && \
     /bin/terraform version
 
+# Install KOPS
+ARG KOPS_VERSION='1.9.0'
+RUN KOPS_URL="https://github.com/kubernetes/kops/releases/download/${KOPS_VERSION}/kops-linux-amd64" && \
+    KOPS_SHA="$(curl -L https://github.com/kubernetes/kops/releases/download/${KOPS_VERSION}/kops-linux-amd64-sha1)  /usr/local/bin/kops" && \
+    curl -SsL --retry 5 "${KOPS_URL}" > /usr/local/bin/kops && \
+    echo "$KOPS_SHA" |sha1sum -c - && \
+    chmod +x /usr/local/bin/kops
 
 # Install kubectl
-ARG KUBECTL_VERSION='1.9.3'
+ARG KUBECTL_VERSION='1.9.7'
 RUN curl -L -o /bin/kubectl https://storage.googleapis.com/kubernetes-release/release/v${KUBECTL_VERSION}/bin/linux/amd64/kubectl && \
     chmod +x /bin/kubectl
 
@@ -46,8 +53,7 @@ ARG STERN_VERSION='1.6.0'
 RUN curl -L -o /bin/stern https://github.com/wercker/stern/releases/download/${STERN_VERSION}/stern_linux_amd64 && \
     chmod +x /bin/stern
 
-
-ARG HELM_VERSION="2.8.2"
+ARG HELM_VERSION="2.9.1"
 RUN curl -L -o helm-v${HELM_VERSION}-linux-amd64.tar.gz http://storage.googleapis.com/kubernetes-helm/helm-v${HELM_VERSION}-linux-amd64.tar.gz && \
     tar xf helm-v${HELM_VERSION}-linux-amd64.tar.gz && \
     cp linux-amd64/helm /bin/helm && \
@@ -65,7 +71,7 @@ RUN apk -Uuv add python-dev py-pip && \
     pip install docker-compose
 
 # Install Google Cloud Tools
-ARG GCLOUD_VERSION='192.0.0'
+ARG GCLOUD_VERSION='201.0.0'
 ENV PATH "/usr/local/google-cloud-sdk/bin:${PATH}"
 RUN curl -L -o /tmp/gcloud.tar.gz https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-${GCLOUD_VERSION}-linux-x86_64.tar.gz && \
     cd /usr/local/ && \

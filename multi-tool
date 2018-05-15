@@ -15,7 +15,7 @@
 # (AZURE,AWS,GOOGLE,KUBE,HELM)_CONFIG specify the respective config directories
 #
 
-MULTI_TOOL_TAG=${MULTI_TOOL_TAG:-v0.5.0}
+MULTI_TOOL_TAG=${MULTI_TOOL_TAG:-v0.6.0}
 DOCKER_IMAGE="multi-tool:$MULTI_TOOL_TAG"
 
 # Update this if you're using a private docker registry
@@ -29,7 +29,7 @@ KUBE_CONFIG=${KUBE_CONFIG:-$HOME/.kube}
 MINIKUBE_CONFIG=${MINIKUBE_CONFIG:-$HOME/.minikube}
 HELM_CONFIG=${HELM_CONFIG:-$HOME/.helm}
 SSH_CONFIG=${SSH_CONFIG:-$HOME/.ssh}
-
+DOCKER_CONFIG=${DOCKER_CONFIG:-$HOME/.docker}
 
 VOLUMES="-v $AWS_CONFIG:/mthome/.aws \
         -v $GOOGLE_CONFIG:/mthome/.config \
@@ -40,6 +40,7 @@ VOLUMES="-v $AWS_CONFIG:/mthome/.aws \
         -v $MINIKUBE_CONFIG:$HOME/.minikube \
         -v $HELM_CONFIG:/mthome/.helm \
         -v $SSH_CONFIG:/mthome/.ssh \
+        -v $DOCKER_CONFIG:/mthome/.docker \
         -v /var/run/docker.sock:/var/run/docker.sock"
 
 opt_count=0

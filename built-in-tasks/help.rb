@@ -8,11 +8,14 @@ task :help do
   multi-tool currently offers a Ruby Rake framework with the following tools available:
       - terraform
       - packer
+      - kops
       - kubectl
       - helm
       - stern
       - docker
       - docker-compose
+      - gcloud
+      - az (azure)
       - ruby aws-sdk
       - ruby inpsec
       - ruby terraforming

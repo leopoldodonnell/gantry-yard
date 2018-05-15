@@ -20,6 +20,7 @@ The current tool set includes the following tools:
 1. packer : the Hashicorp tool to build Machine Images
 1. docker : a docker client to enable docker in docker CICD tasks
 1. docker-compose : the docker-compose client to spin up docker containers using its specification
+1. kops : the Kubernetes Operations tool to build Kubernetes clusters
 1. kubectl : the Kubernetes API client
 1. helm : the Kubernetes deployment packaging tool
 1. cloud cli's : aws, gcloud, azure (**note:** uses the cli 2.0 container)
